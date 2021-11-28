@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 /**
  * Class DiningPhilosophers
  * The main starter.
@@ -46,13 +48,42 @@ public class DiningPhilosophers
 			 * Should be settable from the command line
 			 * or the default if no arguments supplied.
 			 */
-			int iPhilosophers = DEFAULT_NUMBER_OF_PHILOSOPHERS;
+			String input = null;
+			boolean safe = false;
+			int iPhilosophers;
+			Scanner read = new Scanner(System.in);
+			do {
+				try{
+
+					System.out.print("Enter the number of philosophers: ");
+					input = read.next();
+					iPhilosophers = Integer.parseInt(input);
+					if (iPhilosophers<1)
+						throw new NumberFormatException();
+					safe = true;
+				}
+				catch (NumberFormatException e){
+					System.out.println("\"" + input +"\" is not a positive decimal integer\n\nUsage: java DiningPhilosophers[NUMBER_OF_PHILOSOPHERS]");
+					iPhilosophers = 0;
+				}
+
+			} while (!safe);
+
+
+			soMonitor = new Monitor(iPhilosophers);
 
 			// Make the monitor aware of how many philosophers there are
-			soMonitor = new Monitor(iPhilosophers);
+
 
 			// Space for all the philosophers
 			Philosopher aoPhilosophers[] = new Philosopher[iPhilosophers];
+
+
+			System.out.println
+					(
+							iPhilosophers +
+									" philosopher(s) came in for a dinner."
+					);
 
 			// Let 'em sit down
 			for(int j = 0; j < iPhilosophers; j++)
@@ -61,11 +92,7 @@ public class DiningPhilosophers
 				aoPhilosophers[j].start();
 			}
 
-			System.out.println
-			(
-				iPhilosophers +
-				" philosopher(s) came in for a dinner."
-			);
+
 
 			// Main waits for all its children to die...
 			// I mean, philosophers to finish their dinner.

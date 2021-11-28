@@ -101,7 +101,7 @@ public class Philosopher extends BaseThread
 			 */
 
 			boolean decision = rd.nextBoolean();
-			if(decision)
+			if(rd.nextInt(6) == 5)
 			{
 				DiningPhilosophers.soMonitor.requestTalk();
 				talk();

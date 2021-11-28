@@ -13,7 +13,7 @@ public class Monitor
 	 */
 	int numPhilo;
 	boolean chopsticks[];
-
+	boolean myTurnToTalk;
 
 	/**
 	 * Constructor
@@ -22,7 +22,12 @@ public class Monitor
 	{
 		// TODO: set appropriate number of chopsticks based on the # of philosophers
 		numPhilo = piNumberOfPhilosophers;
-		chopsticks = new boolean[numPhilo];
+		chopsticks = new boolean[piNumberOfPhilosophers];
+		myTurnToTalk = true;
+
+		for(int i = 0; i< chopsticks.length; i++){
+			chopsticks[i] = true;
+	}
 
 	}
 
@@ -36,10 +41,12 @@ public class Monitor
 	 * Grants request (returns) to eat when both chopsticks/forks are available.
 	 * Else forces the philosopher to wait()
 	 */
+
+	//chopsticks false -> picked up/in use
 	public synchronized void pickUp(final int piTID)
 	{
 		System.out.printf("Philosopher %d is hungry\n", numPhilo);
-		while (chopsticks[piTID-1]==true && chopsticks[piTID%numPhilo]==true){
+		while (!(chopsticks[(piTID-1)%(numPhilo)] && chopsticks[(piTID)%(numPhilo)])){
 			try {
 				System.out.printf("Philosopher %d is waiting\n", piTID);
 				this.wait();
@@ -47,7 +54,7 @@ public class Monitor
 				e.printStackTrace();
 			}
 		}
-		chopsticks[piTID-1]=false;
+		chopsticks[(piTID-1)%(numPhilo)]=false;
 		chopsticks[piTID%numPhilo]=false;
 	}
 
@@ -57,8 +64,8 @@ public class Monitor
 	 */
 	public synchronized void putDown(final int piTID)
 	{
-		chopsticks[piTID-1]=true;
-		chopsticks[piTID%numPhilo]=true;
+		chopsticks[(piTID-1)%(numPhilo)]=true;
+		chopsticks[(piTID)%(numPhilo)]=true;
 		this.notifyAll();
 	}
 
@@ -68,7 +75,15 @@ public class Monitor
 	 */
 	public synchronized void requestTalk()
 	{
-		// ...
+		while(!myTurnToTalk){
+			try{
+				this.wait();
+			}
+			catch (InterruptedException e){
+				e.printStackTrace();
+			}
+		}
+		myTurnToTalk = true;
 	}
 
 	/**
@@ -77,7 +92,8 @@ public class Monitor
 	 */
 	public synchronized void endTalk()
 	{
-		// ...
+		myTurnToTalk = true;
+		this.notifyAll();
 	}
 }
 
